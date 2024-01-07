@@ -1,0 +1,10 @@
+mat-card {
+  padding: 20px;
+  align-items: flex-start;
+}
+
+form,
+mat-form-field,
+textarea {
+  width: 100%;
+}

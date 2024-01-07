@@ -1,0 +1,7 @@
+<button type="button" mat-button (click)="toggleDrawer()">
+    Toggle sidenav
+</button>
+<mat-drawer-container class="example-container">
+    <mat-drawer mode="side" [ngClass]="{'collapsed': !open}" opened #drawer>Drawer content</mat-drawer>
+    <mat-drawer-content [ngClass]="{'collapsed': !open}">Main content</mat-drawer-content>
+</mat-drawer-container>

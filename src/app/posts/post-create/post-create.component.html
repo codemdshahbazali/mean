@@ -1,0 +1,29 @@
+<mat-progress-bar mode="indeterminate" *ngIf="isLoading; else savePost"></mat-progress-bar>
+<ng-template #savePost>
+    <mat-card>
+        <form (submit)="onSavePost(formRef)" #formRef="ngForm">
+            <mat-form-field>
+                <mat-label>Post Title</mat-label>
+                <input matInput placeholder="Title" [ngModel]="fetchedPost?.title" name="title" required
+                    #titleRef="ngModel">
+                <mat-error *ngIf="titleRef.invalid">Please enter a title</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Post Description</mat-label>
+                <input matInput placeholder="Description" [ngModel]="fetchedPost?.desc" name="desc" required
+                    #descRef="ngModel">
+                <mat-error *ngIf="descRef.invalid">Please enter a description</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Post Content</mat-label>
+                <textarea matInput placeholder="Content" [ngModel]="fetchedPost?.content" name="content" required
+                    #contentRef="ngModel"></textarea>
+                <mat-error *ngIf="contentRef.invalid">Please enter some content</mat-error>
+            </mat-form-field>
+            <button mat-raised-button color="accent" type="submit">Save Post</button>
+        </form>
+
+    </mat-card>
+</ng-template>

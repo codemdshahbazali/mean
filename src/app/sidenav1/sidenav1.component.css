@@ -1,0 +1,32 @@
+.example-container {
+  width: 400px;
+  height: 200px;
+  margin: 10px;
+  border: 1px solid #555;
+}
+
+mat-drawer {
+  width: 150px;
+  transition: width 250ms linear;
+}
+
+mat-drawer.collapsed {
+  /* width: 60px !important; */
+  /* visibility: visible !important;
+  display: block !important; */
+  /* width: 100px; */
+  /* transform: translateX(-50px); */
+  /* transform: translate3d(-10%, 0, 0); */
+  /* overflow: hidden;   */
+  width: 50px;
+}
+
+mat-drawer-content {
+  flex: 1;
+  margin-left: 150px !important;
+  transition: margin 250ms linear;
+}
+
+mat-drawer-content.collapsed {
+  margin-left: 50px !important;
+}

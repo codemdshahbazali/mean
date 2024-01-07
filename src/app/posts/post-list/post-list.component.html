@@ -1,0 +1,18 @@
+<mat-progress-bar mode="indeterminate" *ngIf="isloading; else postList"></mat-progress-bar>
+<ng-template #postList>
+    <mat-accordion multi *ngIf="postsList.length > 0">
+        <mat-expansion-panel *ngFor="let post of postsList">
+            <mat-expansion-panel-header>
+                <mat-panel-title>{{post.title}}</mat-panel-title>
+                <mat-panel-description>{{post.desc}}</mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <p>{{post.content}}</p>
+            <mat-action-row>
+                <button mat-button color="primary" (click)="onEdit(post.id)">EDIT</button>
+                <button mat-button color="warn" (click)="onDelete(post.id)">DELETE</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+    </mat-accordion>
+    <mat-card *ngIf="postsList.length <= 0">No Posts Available</mat-card>
+</ng-template>
