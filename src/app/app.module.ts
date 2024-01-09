@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderComponent } from './header/header.component';
 import { PostListComponent } from './posts/post-list/post-list.component';
@@ -35,7 +35,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
     BrowserAnimationsModule,
     MatInputModule,
     MatFormFieldModule,
@@ -48,6 +47,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatListModule,
     HttpClientModule,
     MatProgressBarModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

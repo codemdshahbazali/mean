@@ -2,6 +2,13 @@
     Toggle sidenav
 </button>
 <mat-drawer-container class="example-container">
-    <mat-drawer mode="side" [ngClass]="{'collapsed': !open}" opened #drawer>Drawer content</mat-drawer>
+    <mat-drawer mode="side" [ngClass]="{'collapsed': !open}" opened #drawer>
+        <h1>Items</h1>
+        <ul>
+            <li *ngIf="open">Item1</li>
+            <li *ngIf="open">Item2</li>
+            <li *ngIf="open">Item3</li>
+        </ul>
+    </mat-drawer>
     <mat-drawer-content [ngClass]="{'collapsed': !open}">Main content</mat-drawer-content>
 </mat-drawer-container>

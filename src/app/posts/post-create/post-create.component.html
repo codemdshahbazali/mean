@@ -1,28 +1,33 @@
 <mat-progress-bar mode="indeterminate" *ngIf="isLoading; else savePost"></mat-progress-bar>
 <ng-template #savePost>
     <mat-card>
-        <form (submit)="onSavePost(formRef)" #formRef="ngForm">
+        <form [formGroup]="form" (submit)="onSavePost()">
             <mat-form-field>
                 <mat-label>Post Title</mat-label>
-                <input matInput placeholder="Title" [ngModel]="fetchedPost?.title" name="title" required
-                    #titleRef="ngModel">
-                <mat-error *ngIf="titleRef.invalid">Please enter a title</mat-error>
+                <input matInput placeholder="Title" formControlName="title">
+                <mat-error *ngIf="form.get('title').invalid">Please enter a title</mat-error>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>Post Description</mat-label>
-                <input matInput placeholder="Description" [ngModel]="fetchedPost?.desc" name="desc" required
-                    #descRef="ngModel">
-                <mat-error *ngIf="descRef.invalid">Please enter a description</mat-error>
+                <input matInput placeholder="Description" formControlName="desc">
+                <mat-error *ngIf="form.get('desc').invalid">Please enter a description</mat-error>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>Post Content</mat-label>
-                <textarea matInput placeholder="Content" [ngModel]="fetchedPost?.content" name="content" required
-                    #contentRef="ngModel"></textarea>
-                <mat-error *ngIf="contentRef.invalid">Please enter some content</mat-error>
+                <textarea matInput placeholder="Content" formControlName="content"></textarea>
+                <mat-error *ngIf="form.get('content').invalid">Please enter some content</mat-error>
             </mat-form-field>
-            <button mat-raised-button color="accent" type="submit">Save Post</button>
+            <div class="image-upload">
+                <button type="button" mat-stroked-button (click)="fileUpload.click()">Pick Image</button>
+                <input type="file" #fileUpload (change)="onImagePicked($event)" />
+            </div>
+            <div class="image-preview" *ngIf="imagePreview !=='' && imagePreview && form.get('image').valid">
+                <img [src]="imagePreview" [alt]="form.value.title">
+            </div>
+
+            <button mat-raised-button color="accent" type="submit">{{editMode ? "Edit Post": "Save Post"}}</button>
         </form>
 
     </mat-card>
