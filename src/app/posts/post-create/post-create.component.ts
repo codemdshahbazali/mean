@@ -16,7 +16,7 @@ export class PostCreateComponent implements OnInit {
   isLoading: boolean = false;
   fetchedPost;
   form: FormGroup;
-  imagePreview: string;
+  imagePreview: string = '';
 
   constructor(
     private postService: PostService,
@@ -41,18 +41,19 @@ export class PostCreateComponent implements OnInit {
         asyncValidators: [mimeType],
       }),
     });
+
     this.route.params.subscribe((params) => {
       const postId = params['id'];
       if (postId) {
         this.editMode = true;
         this.isLoading = true;
         this.postService.getPostById(postId).subscribe((response) => {
-          const post = response.post;
           this.fetchedPost = response.post;
           this.form.setValue({
-            title: post.title,
-            desc: post.desc,
-            content: post.content,
+            title: this.fetchedPost.title,
+            desc: this.fetchedPost.desc,
+            content: this.fetchedPost.content,
+            image: this.fetchedPost.imagePath,
           });
           // response.post;
           this.isLoading = false;
@@ -67,18 +68,22 @@ export class PostCreateComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    const post: Post = {
-      id: null,
-      title: this.form.value.title,
-      desc: this.form.value.desc,
-      content: this.form.value.content,
-    };
 
     if (this.editMode) {
-      post.id = this.fetchedPost._id;
-      this.postService.editPost(post);
+      this.postService.editPost(
+        this.fetchedPost._id,
+        this.form.value.title,
+        this.form.value.desc,
+        this.form.value.content,
+        this.form.value.image
+      );
     } else {
-      this.postService.addPost(post);
+      this.postService.addPost(
+        this.form.value.title,
+        this.form.value.desc,
+        this.form.value.content,
+        this.form.value.image
+      );
     }
 
     this.form.reset();

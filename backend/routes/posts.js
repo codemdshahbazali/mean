@@ -1,23 +1,73 @@
 const express = require("express");
-const router = express.Router();
+const multer = require("multer");
 
 const Post = require("../models/post");
 
-router.post("", (req, res, next) => {
-  const post = new Post({
-    title: req.body.title,
-    desc: req.body.desc,
-    content: req.body.content,
-  });
+const router = express.Router();
 
-  //saves the post to the database
-  post.save().then((createdPost) => {
-    res.status(201).json({
-      message: "Post added successfully",
-      postId: createdPost._id,
-    });
-  });
+const MIME_TYPE_MAP = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const isValid = MIME_TYPE_MAP[file.mimetype];
+    let err = new Error("Invalid mime type");
+
+    if (isValid) {
+      err = null;
+    }
+    cb(err, "backend/images");
+  },
+  filename: (req, file, cb) => {
+    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const ext = MIME_TYPE_MAP[file.mimetype];
+
+    cb(null, name + "-" + Date.now() + "." + ext);
+  },
 });
+
+router.post(
+  "",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    const url = req.protocol + "://" + req.get("host");
+    const post = new Post({
+      title: req.body.title,
+      desc: req.body.desc,
+      content: req.body.content,
+      imagePath: url + "/images/" + req.file.filename,
+    });
+
+    //saves the post to the database
+    post
+      .save()
+      .then((createdPost) => {
+        res.status(201).json({
+          // post: {
+          //   id: createdPost._id,
+          //   title: createdPost.title,
+          //   desc: createdPost.desc,
+          //   content: createdPost.content,
+          //   imagePath: createdPost.imagePath,
+          // },
+          post: {
+            ...createdPost,
+            id: createdPost._id,
+          },
+        });
+      })
+      .catch((error) => {
+        console.log(error.message);
+        res.status(400).json({
+          message: "Error Occurred",
+          postId: error.message,
+        });
+      });
+  }
+);
 
 // router.use("/api/posts", (req, res, next) => {
 router.get("", (req, res, next) => {
@@ -47,23 +97,36 @@ router.delete("/:id", (req, res, next) => {
   });
 });
 
-router.put("/:id", (req, res, next) => {
-  const post = {
-    title: req.body.title,
-    desc: req.body.desc,
-    content: req.body.content,
-  };
-  Post.updateOne({ _id: req.params.id }, post)
-    .then((response) => {
-      res.status(200).json({
-        message: "Post Updated",
+router.put(
+  "/:id",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    let imagePath = req.body.imagePath;
+    console.log(req.file);
+    if (req.file) {
+      const url = req.protocol + "://" + req.get("host");
+      imagePath = url + "/images/" + req.file.filename;
+    }
+
+    const post = {
+      title: req.body.title,
+      desc: req.body.desc,
+      content: req.body.content,
+      imagePath: imagePath,
+    };
+
+    Post.updateOne({ _id: req.params.id }, { $set: post })
+      .then((response) => {
+        res.status(200).json({
+          message: "Post Updated",
+        });
+      })
+      .catch((error) => {
+        res.status(400).json({
+          message: error.message,
+        });
       });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        message: error.message,
-      });
-    });
-});
+  }
+);
 
 module.exports = router;

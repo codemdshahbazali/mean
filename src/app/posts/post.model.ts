@@ -3,4 +3,5 @@ export interface Post {
   title: string;
   desc: string;
   content: string;
+  imagePath: string;
 }

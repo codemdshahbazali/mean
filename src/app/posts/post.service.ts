@@ -22,6 +22,7 @@ export class PostService {
               title: post.title,
               desc: post.desc,
               content: post.content,
+              imagePath: post.imagePath,
             };
           });
         })
@@ -38,16 +39,28 @@ export class PostService {
     return this.postUpdated.asObservable();
   }
 
-  addPost(post: Post) {
+  addPost(title: string, desc: string, content: string, image) {
+    const postData = new FormData();
+    postData.append('title', title);
+    postData.append('desc', desc);
+    postData.append('content', content);
+    postData.append('image', image, title);
     this.http
-      .post<{ message: string; postId: string }>(
+      .post<{ message: string; post: Post }>(
         'http://localhost:3000/api/posts',
-        post
+        postData
       )
       .subscribe({
         next: (response) => {
           //updating the created post id to the static post
-          post.id = response.postId;
+          const post: Post = {
+            id: response.post.id,
+            title,
+            desc,
+            content,
+            imagePath: response.post.imagePath,
+          };
+          // post.id = response.postId;
           this.postsArr.push(post);
           this.postUpdated.next([...this.postsArr]);
           this.router.navigate(['/']);
@@ -55,11 +68,37 @@ export class PostService {
       });
   }
 
-  editPost(post: Post) {
+  editPost(
+    id: string,
+    title: string,
+    desc: string,
+    content: string,
+    image: File | string
+  ) {
+    let postData;
+    console.log(typeof image);
+    if (typeof image === 'object') {
+      postData = new FormData();
+      postData.append('id', id);
+      postData.append('title', title);
+      postData.append('desc', desc);
+      postData.append('content', content);
+      postData.append('image', image, title);
+    } else {
+      postData = {
+        id,
+        title,
+        desc,
+        content,
+        imagePath: image,
+      };
+      console.log(postData);
+    }
+
     this.http
       .put<{ message: string }>(
-        `http://localhost:3000/api/posts/${post.id}`,
-        post
+        `http://localhost:3000/api/posts/${id}`,
+        postData
       )
       .subscribe({
         next: (response) => {
