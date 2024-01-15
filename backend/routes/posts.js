@@ -71,13 +71,30 @@ router.post(
 
 // router.use("/api/posts", (req, res, next) => {
 router.get("", (req, res, next) => {
-  Post.find().then((documents) => {
+  console.log(req.query)
+  const pageSize = +req.query.size;
+  const currentPage = +req.query.page;
+  let resultDocuments;
+
+  const postQuery = Post.find();
+
+  if (pageSize != null && currentPage !=null && pageSize >= 0 && currentPage >= 0) {
+    postQuery
+    .skip(pageSize * currentPage)
+    .limit(pageSize);
+  }
+
+  postQuery.then((documents) => {
     // it returns the json automatically hence we don't need to call the return
+    resultDocuments = documents
+    return Post.countDocuments()
+  })
+  .then((count) => {
     res.status(200).json({
-      message: "Posts sent successfully",
-      posts: documents,
+      posts: resultDocuments,
+      maxCount: count,
     });
-  });
+  })
 });
 
 router.get("/:id", (req, res, next) => {
@@ -102,7 +119,6 @@ router.put(
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
     let imagePath = req.body.imagePath;
-    console.log(req.file);
     if (req.file) {
       const url = req.protocol + "://" + req.get("host");
       imagePath = url + "/images/" + req.file.filename;

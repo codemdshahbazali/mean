@@ -1,9 +1,15 @@
 :host {
-  display: block;
   margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 90px);
 }
 
-mat-card {
+.mat-accordion {
+  flex: 1;
+}
+
+.mat-card {
   padding: 20px;
   text-align: center;
 }

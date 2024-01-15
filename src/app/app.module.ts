@@ -22,6 +22,8 @@ import { MatListModule } from '@angular/material/list';
 import { Sidenav1Component } from './sidenav1/sidenav1.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {MatPaginatorModule} from '@angular/material/paginator';
+
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     HttpClientModule,
     MatProgressBarModule,
     ReactiveFormsModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent],

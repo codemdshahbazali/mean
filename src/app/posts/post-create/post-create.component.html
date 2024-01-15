@@ -1,5 +1,4 @@
-<mat-progress-bar mode="indeterminate" *ngIf="isLoading; else savePost"></mat-progress-bar>
-<ng-template #savePost>
+<mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
     <mat-card>
         <form [formGroup]="form" (submit)="onSavePost()">
             <mat-form-field>
@@ -31,4 +30,3 @@
         </form>
 
     </mat-card>
-</ng-template>

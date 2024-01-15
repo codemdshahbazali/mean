@@ -3,6 +3,7 @@ import { Post } from '../post.model';
 import { PostService } from '../post.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-post-list',
@@ -14,25 +15,43 @@ export class PostListComponent implements OnInit, OnDestroy {
   postsList: Post[] = [];
   postServiceSbs: Subscription;
   isloading: boolean = false;
+
+  length = 100;
+  pageSize = 10;
+  pageIndex = 0;
+  pageSizeOptions = [10, 25, 50];
+
   constructor(private postService: PostService, private router: Router) {}
 
   ngOnInit(): void {
     this.isloading = true;
-    this.postService.getPosts();
+    this.postsList =  this.postService.postsArr;
+    this.postService.getPosts(this.pageIndex, this.pageSize);
     this.postServiceSbs = this.postService.getPostUpdatedListener().subscribe({
-      next: (postData: Post[]) => {
-        this.postsList = postData;
+      next: (postData: {posts: Post[], totalPosts: number}) => {
+        this.postsList = postData.posts;
+        this.length = postData.totalPosts;
         this.isloading = false;
+        console.log("Executed");
       },
     });
   }
 
   onDelete(postId: string) {
-    this.postService.deletePost(postId);
+    this.postService.deletePost(postId).subscribe(() => {
+      this.postService.getPosts(this.pageIndex, this.pageSize);
+    })
   }
 
   onEdit(postId: string) {
     this.router.navigate(['/edit', postId]);
+  }
+
+  onPageChange(pageEvent: PageEvent) {
+    this.isloading = true;
+    this.pageIndex = pageEvent.pageIndex;
+    this.pageSize = pageEvent.pageSize;
+    this.postService.getPosts(this.pageIndex, this.pageSize);
   }
 
   ngOnDestroy(): void {
