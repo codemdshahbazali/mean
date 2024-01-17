@@ -1,0 +1,21 @@
+:host {
+    width: 800px;
+    display: block;
+    margin: 20px auto;
+}
+
+.example-form {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    align-items: center;
+}
+
+.example-full-width {
+    width: 100%;
+}
+
+.auth-button-group {
+    text-align: center;
+}

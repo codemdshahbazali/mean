@@ -20,9 +20,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { Sidenav1Component } from './sidenav1/sidenav1.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { AuthComponent } from './auth/auth.component';
+import { AuthInterceptor } from './auth/auth-interceptor.service';
 
 
 @NgModule({
@@ -33,6 +35,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     PostListComponent,
     SidenavComponent,
     Sidenav1Component,
+    AuthComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,9 +53,16 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     HttpClientModule,
     MatProgressBarModule,
     ReactiveFormsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

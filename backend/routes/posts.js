@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 
 const Post = require("../models/post");
+const auth = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ const storage = multer.diskStorage({
 });
 
 router.post(
-  "",
+  "", auth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
     const url = req.protocol + "://" + req.get("host");
@@ -60,7 +61,6 @@ router.post(
         });
       })
       .catch((error) => {
-        console.log(error.message);
         res.status(400).json({
           message: "Error Occurred",
           postId: error.message,
@@ -71,7 +71,6 @@ router.post(
 
 // router.use("/api/posts", (req, res, next) => {
 router.get("", (req, res, next) => {
-  console.log(req.query)
   const pageSize = +req.query.size;
   const currentPage = +req.query.page;
   let resultDocuments;
@@ -106,7 +105,7 @@ router.get("/:id", (req, res, next) => {
   });
 });
 
-router.delete("/:id", (req, res, next) => {
+router.delete("/:id", auth, (req, res, next) => {
   Post.deleteOne({ _id: req.params.id }).then((response) => {
     res.status(200).json({
       message: "Post Deleted",
@@ -115,7 +114,7 @@ router.delete("/:id", (req, res, next) => {
 });
 
 router.put(
-  "/:id",
+  "/:id", auth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
     let imagePath = req.body.imagePath;

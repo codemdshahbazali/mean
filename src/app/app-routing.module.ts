@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
+import { AuthComponent } from './auth/auth.component';
+import { AuthGaurdService } from './auth/auth-gaurd.service';
 
 const routes: Routes = [
   {
@@ -9,13 +11,19 @@ const routes: Routes = [
     component: PostListComponent,
   },
   {
+    canActivate: [AuthGaurdService],
     path: 'create',
     component: PostCreateComponent,
   },
   ,
   {
+    canActivate: [AuthGaurdService],
     path: 'edit/:id',
     component: PostCreateComponent,
+  },,
+  {
+    path: 'auth',
+    component: AuthComponent,
   },
 ];
 

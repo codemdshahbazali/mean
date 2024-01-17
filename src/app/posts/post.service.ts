@@ -82,7 +82,6 @@ export class PostService {
     image: File | string
   ) {
     let postData;
-    console.log(typeof image);
     if (typeof image === 'object') {
       postData = new FormData();
       postData.append('id', id);
@@ -99,7 +98,6 @@ export class PostService {
         imagePath: image,
       };
     }
-    console.log(postData);
 
     this.http
       .put<{ message: string }>(

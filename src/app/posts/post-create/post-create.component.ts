@@ -91,7 +91,6 @@ export class PostCreateComponent implements OnInit {
   onImagePicked(event: Event) {
     //This line gets the first file from the files array of the HTMLInputElement that triggered the event 
     //(i.e., the file input element), and assigns it to the constant file.
-    console.log(event);
     const file = (event.target as HTMLInputElement).files[0];
     //This line updates the value of the image field in the form with the file selected by the user.
     this.form.patchValue({
