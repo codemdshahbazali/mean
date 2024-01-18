@@ -9,12 +9,11 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
-  authSubs: Subscription;
+  private authSubs: Subscription;
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.authSubs = this.authService.getLoginStatus().subscribe((isAuth) => {
-      console.log('isAuth from header => ' + isAuth);
       this.isAuthenticated = isAuth;
     });
   }

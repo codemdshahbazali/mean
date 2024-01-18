@@ -1,14 +1,16 @@
+<mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
 <mat-card>
     <form class="example-form" (ngSubmit)="onAuthFormSubmit(authForm)" #authForm="ngForm">
         <mat-form-field class="example-full-width">
             <mat-label>Email</mat-label>
-            <input type="email" matInput placeholder="Email" ngModel name="email" required email>
-            <mat-error>Please enter a valid email</mat-error>
+            <input type="email" matInput placeholder="Email" ngModel name="email" required email #emailInput="ngModel">
+            <mat-error>Please enter a valid email.</mat-error>
+            <!-- <mat-error *ngIf="emailInput?.invalid">Please enter a valid email.</mat-error> -->
         </mat-form-field>
         <mat-form-field class="example-full-width">
             <mat-label>Password</mat-label>
             <input type="password" matInput placeholder="Password" ngModel name="password" required autocomplete>
-            <mat-error>Please enter a valid password</mat-error>
+            <mat-error>Please enter a valid password.</mat-error>
         </mat-form-field>
         <div class="auth-button-group">
             <button mat-raised-button color="primary" type="submit">{{isLogin ? "Login" : " Register"}}</button> | 

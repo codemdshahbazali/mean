@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true //here unique doesn't work by default. It works in combination with mongoose-unique-validator package. Without it, it is used for indexing and performance
   },
   password: {
     type: String,
@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
   },
 });
 
+//adding validator as plugin
 userSchema.plugin(uniqueValidator);
 
 //this is the instance of the blueprint which we export

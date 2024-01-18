@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 router.post("/register", (req, res, next) => {
-  const saltRounds = 10;
+  const saltRounds = 10; //higher value it is, longer it takes to encrypt but it is more secure
   bcrypt.hash(req.body.password, saltRounds).then((hashedPassowrd) => {
     const user = new User({
       email: req.body.email,
@@ -18,12 +18,13 @@ router.post("/register", (req, res, next) => {
       .then((createdUser) => {
         res.status(201).json({
           post: {
+            message: "User created!",
             user: createdUser,
           },
         });
       })
       .catch((error) => {
-        res.status(400).json({
+        res.status(500).json({
           message: error.message,
         });
       });
@@ -35,43 +36,31 @@ router.post("/login", (req, res, next) => {
   let fetchedUser;
 
   User.findOne({ email: req.body.email })
-    .then((result) => {
-      if (result == null) {
+    .then((user) => {
+      if (user == null) {
         throw new Error("Email not found !!!");
       }
-      fetchedUser = result;
-      return result.password;
+
+      fetchedUser = user;
+      return bcrypt.compare(req.body.password, user.password);
     })
-    .then((hashedPassowrd) => {
-      bcrypt
-        .compare(req.body.password, hashedPassowrd)
-        .then((result) => {
-          //generate jwt token and return
-          return result;
-        })
-        .then((isAuthenticated) => {
-          if (isAuthenticated) {
-            jwt.sign(
-              {
-                email: req.body.email,
-                userId: fetchedUser._id,
-              },
-              "this_is_a_secret_key",
-              { expiresIn: "60000" },
-              (err, token) => {
-                return res.status(200).json({
-                  token: "Bearer " + token,
-                  expiresIn: "60000",
-                  timestamp: new Date(),
-                });
-              }
-            );
-          } else {
-            res.status(400).json({
-              message: "Inccorect Password",
-            });
-          }
+    .then((isAuthenticated) => {
+      if (!isAuthenticated) {
+        return res.status(400).json({
+          message: "Inccorect Password",
         });
+      }
+
+      const token = jwt.sign(
+        { email: req.body.email, userId: fetchedUser._id },
+        "this_is_a_secret_key",
+        { expiresIn: "36000" }
+      );
+
+      res.status(200).json({
+        token: "Bearer " + token,
+        expiresIn: "36000",
+      });
     })
     .catch((error) => {
       res.status(400).json({

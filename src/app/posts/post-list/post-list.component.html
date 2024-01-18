@@ -16,9 +16,7 @@
         </mat-action-row>
     </mat-expansion-panel>
 </mat-accordion>
-<mat-paginator [length]="length"
-              [pageSize]="pageSize"
-              [pageSizeOptions]="pageSizeOptions"
-              aria-label="Select page" (page)="onPageChange($event)" *ngIf="postsList.length > 0">
+<mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" aria-label="Select page"
+    (page)="onPageChange($event)" *ngIf="postsList.length > 0">
 </mat-paginator>
 <mat-card *ngIf="postsList.length <= 0">No Posts Available</mat-card>

@@ -14,15 +14,16 @@ import { AuthService } from '../../auth/auth.service';
 export class PostListComponent implements OnInit, OnDestroy {
   // @Input() posts: Post[] = [];
   postsList: Post[] = [];
-  postServiceSbs: Subscription;
   isloading: boolean = false;
   isAuthenticated = false;
-  authSubs: Subscription;
 
   length = 100;
   pageSize = 10;
   pageIndex = 0;
   pageSizeOptions = [10, 25, 50];
+
+  private postServiceSbs: Subscription;
+  private authSubs: Subscription;
 
   constructor(private postService: PostService, private router: Router, private authService: AuthService) {}
 
@@ -40,7 +41,6 @@ export class PostListComponent implements OnInit, OnDestroy {
 
     this.authSubs = this.authService.getLoginStatus().subscribe({
       next: (isAuth) => {
-        console.log('isAuth from postList => ' + isAuth);
         this.isAuthenticated = isAuth;
       }
     })
