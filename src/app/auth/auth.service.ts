@@ -11,6 +11,7 @@ export class AuthService {
   private token = '';
   private loginStatus = new BehaviorSubject<boolean>(false);
   private clearTimer: NodeJS.Timeout;
+  private creator: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -20,6 +21,10 @@ export class AuthService {
 
   getLoginStatus() {
     return this.loginStatus.asObservable();
+  }
+
+  getCreator() {
+    return this.creator;
   }
 
   register(email: string, password: string) {
@@ -47,8 +52,10 @@ export class AuthService {
           }
 
           this.loginStatus.next(true);
+          this.creator = response.userId;
           localStorage.setItem('tokenDetails', JSON.stringify({
             token: response.token,
+            creator: response.userId,
             expiresIn: response.expiresIn,
             timestamp: (new Date()).toISOString()
           }));
@@ -68,6 +75,7 @@ export class AuthService {
 
     const tokenDetails = JSON.parse(tokenData);
     this.token = tokenDetails.token;
+    this.creator = tokenDetails.creator;
     this.loginStatus.next(true);
     let timeNow = new Date().getTime();
     let timeCreated = new Date(tokenDetails.timestamp).getTime();
@@ -83,6 +91,7 @@ export class AuthService {
   logout() {
     clearTimeout(this.clearTimer);
     this.token = null;
+    this.creator = null;
     this.loginStatus.next(false);
     localStorage.removeItem('tokenDetails');
     this.router.navigate(['/']);

@@ -31,15 +31,18 @@ const storage = multer.diskStorage({
 });
 
 router.post(
-  "", auth,
+  "",
+  auth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
+    console.log(req.authData);
     const url = req.protocol + "://" + req.get("host");
     const post = new Post({
       title: req.body.title,
       desc: req.body.desc,
       content: req.body.content,
       imagePath: url + "/images/" + req.file.filename,
+      creator: req.authData.userId,
     });
 
     //saves the post to the database
@@ -63,7 +66,7 @@ router.post(
       .catch((error) => {
         res.status(400).json({
           message: "Error Occurred",
-          postId: error.message,
+          error: error.message,
         });
       });
   }
@@ -77,23 +80,27 @@ router.get("", (req, res, next) => {
 
   const postQuery = Post.find();
 
-  if (pageSize != null && currentPage !=null && pageSize >= 0 && currentPage >= 0) {
-    postQuery
-    .skip(pageSize * currentPage)
-    .limit(pageSize);
+  if (
+    pageSize != null &&
+    currentPage != null &&
+    pageSize >= 0 &&
+    currentPage >= 0
+  ) {
+    postQuery.skip(pageSize * currentPage).limit(pageSize);
   }
 
-  postQuery.then((documents) => {
-    // it returns the json automatically hence we don't need to call the return
-    resultDocuments = documents
-    return Post.countDocuments()
-  })
-  .then((count) => {
-    res.status(200).json({
-      posts: resultDocuments,
-      maxCount: count,
+  postQuery
+    .then((documents) => {
+      // it returns the json automatically hence we don't need to call the return
+      resultDocuments = documents;
+      return Post.countDocuments();
+    })
+    .then((count) => {
+      res.status(200).json({
+        posts: resultDocuments,
+        maxCount: count,
+      });
     });
-  })
 });
 
 router.get("/:id", (req, res, next) => {
@@ -106,15 +113,26 @@ router.get("/:id", (req, res, next) => {
 });
 
 router.delete("/:id", auth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id }).then((response) => {
-    res.status(200).json({
-      message: "Post Deleted",
+  Post.deleteOne({ _id: req.params.id, creator: req.authData.userId })
+    .then((response) => {
+      if (response.deletedCount > 0) {
+        res.status(200).json({
+          message: "Post Deleted",
+        });
+      } else {
+        throw Error("You can't delete posts created by others");
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({
+        message: error.message,
+      });
     });
-  });
 });
 
 router.put(
-  "/:id", auth,
+  "/:id",
+  auth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
     let imagePath = req.body.imagePath;
@@ -130,11 +148,19 @@ router.put(
       imagePath: imagePath,
     };
 
-    Post.updateOne({ _id: req.params.id }, { $set: post })
+    Post.updateOne(
+      { _id: req.params.id, creator: req.authData.userId },
+      { $set: post }
+    )
       .then((response) => {
-        res.status(200).json({
-          message: "Post Updated",
-        });
+        console.log(response);
+        if (response.modifiedCount > 0 || response.matchedCount > 0) {
+          res.status(200).json({
+            message: "Post Updated",
+          });
+        } else {
+          throw Error("You can't edit posts created by others");
+        }
       })
       .catch((error) => {
         res.status(400).json({

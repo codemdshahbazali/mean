@@ -12,6 +12,9 @@ const postSchema = mongoose.Schema({
     required: true,
   },
   imagePath: { type: String, required: true },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId, ref: "User", required: true
+  }
 });
 //this is the instance of the blueprint which we export
 module.exports = mongoose.model("Post", postSchema);

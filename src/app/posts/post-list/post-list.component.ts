@@ -16,6 +16,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   postsList: Post[] = [];
   isloading: boolean = false;
   isAuthenticated = false;
+  creator: string | null = null;
 
   length = 100;
   pageSize = 10;
@@ -29,6 +30,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isloading = true;
+    this.creator = this.authService.getCreator();
     this.postsList =  this.postService.postsArr;
     this.postService.getPosts(this.pageIndex, this.pageSize);
     this.postServiceSbs = this.postService.getPostUpdatedListener().subscribe({

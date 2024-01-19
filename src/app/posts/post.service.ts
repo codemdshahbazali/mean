@@ -27,6 +27,7 @@ export class PostService {
                 desc: post.desc,
                 content: post.content,
                 imagePath: post.imagePath,
+                creator: post.creator
               };
             }),
             maxCount: postData.maxCount
