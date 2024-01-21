@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { AuthData } from './auth-data.model';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class AuthService {
   private loginStatus = new BehaviorSubject<boolean>(false);
   private clearTimer: NodeJS.Timeout;
   private creator: string | null = null;
+  private URL = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -32,7 +34,7 @@ export class AuthService {
       email,
       password,
     };
-    return this.http.post('http://localhost:3000/api/auth/register', authData);
+    return this.http.post(`${this.URL}/auth/register`, authData);
   }
 
   login(email: string, password: string) {
@@ -40,34 +42,32 @@ export class AuthService {
       email,
       password,
     };
-    this.http
-      .post<any>('http://localhost:3000/api/auth/login', authData)
-      .subscribe({
-        next: (response) => {
-          this.token = response.token;
+    this.http.post<any>(`${this.URL}/auth/login`, authData).subscribe({
+      next: (response) => {
+        this.token = response.token;
 
-          if (!this.token) {
-            return;
-          }
+        if (!this.token) {
+          return;
+        }
 
-          this.loginStatus.next(true);
-          this.creator = response.userId;
-          localStorage.setItem(
-            'tokenDetails',
-            JSON.stringify({
-              token: response.token,
-              creator: response.userId,
-              expiresIn: response.expiresIn,
-              timestamp: new Date().toISOString(),
-            })
-          );
-          this.autoLogout(response.expiresIn);
-          this.router.navigate(['/']);
-        },
-        error: (err) => {
-          this.loginStatus.next(false);
-        },
-      });
+        this.loginStatus.next(true);
+        this.creator = response.userId;
+        localStorage.setItem(
+          'tokenDetails',
+          JSON.stringify({
+            token: response.token,
+            creator: response.userId,
+            expiresIn: response.expiresIn,
+            timestamp: new Date().toISOString(),
+          })
+        );
+        this.autoLogout(response.expiresIn);
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        this.loginStatus.next(false);
+      },
+    });
   }
 
   autoLogin(tokenData: string) {

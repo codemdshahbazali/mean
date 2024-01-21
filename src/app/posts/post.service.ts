@@ -7,16 +7,15 @@ import { Router } from '@angular/router';
 @Injectable({ providedIn: 'root' })
 export class PostService {
   postsArr: Post[] = [];
-  private postUpdated = new Subject<{posts: Post[], totalPosts: number}>();
+  private URL = environment.apiUrl + '/posts';
+  private postUpdated = new Subject<{ posts: Post[]; totalPosts: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
   getPosts(page: number, size: number) {
     const queryParams = `?page=${page}&size=${size}`;
     this.http
-      .get<{ posts: any; maxCount: number }>(
-        'http://localhost:3000/api/posts' + queryParams
-      )
+      .get<{ posts: any; maxCount: number }>(this.URL + queryParams)
       .pipe(
         map((postData) => {
           return {
@@ -27,17 +26,20 @@ export class PostService {
                 desc: post.desc,
                 content: post.content,
                 imagePath: post.imagePath,
-                creator: post.creator
+                creator: post.creator,
               };
             }),
-            maxCount: postData.maxCount
+            maxCount: postData.maxCount,
           };
         })
       )
       .subscribe({
         next: (transformedPostData) => {
           this.postsArr = transformedPostData.posts;
-          this.postUpdated.next({posts: [...this.postsArr], totalPosts: transformedPostData.maxCount});
+          this.postUpdated.next({
+            posts: [...this.postsArr],
+            totalPosts: transformedPostData.maxCount,
+          });
         },
       });
   }
@@ -53,10 +55,7 @@ export class PostService {
     postData.append('content', content);
     postData.append('image', image, title);
     this.http
-      .post<{ message: string; post: Post }>(
-        'http://localhost:3000/api/posts',
-        postData
-      )
+      .post<{ message: string; post: Post }>(this.URL, postData)
       .subscribe({
         next: (response) => {
           //updating the created post id to the static post
@@ -101,10 +100,7 @@ export class PostService {
     }
 
     this.http
-      .put<{ message: string }>(
-        `http://localhost:3000/api/posts/${id}`,
-        postData
-      )
+      .put<{ message: string }>(`${this.URL}/${id}`, postData)
       .subscribe({
         next: (response) => {
           //updating the created post id to the static post
@@ -116,10 +112,11 @@ export class PostService {
   }
 
   getPostById(postId: string) {
-    return this.http.get<any>(`http://localhost:3000/api/posts/${postId}`);
+    return this.http.get<any>(`${this.URL}/${postId}`);
   }
 
   deletePost(postId: string) {
-    return this.http.delete(`http://localhost:3000/api/posts/${postId}`)
+    return this.http.delete(`${this.URL}/${postId}`);
   }
 }
+import { environment } from '../../environments/environment.development';
