@@ -19,7 +19,6 @@ router.post("/register", (req, res, next) => {
         res.status(201).json({
           post: {
             message: "User created!",
-            user: createdUser,
           },
         });
       })
@@ -47,7 +46,7 @@ router.post("/login", (req, res, next) => {
     .then((isAuthenticated) => {
       if (!isAuthenticated) {
         return res.status(400).json({
-          message: "Inccorect Password",
+          message: "Incorrect Password",
         });
       }
 
