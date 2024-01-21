@@ -64,9 +64,8 @@ router.post(
         });
       })
       .catch((error) => {
-        res.status(400).json({
-          message: "Error Occurred",
-          error: error.message,
+        res.status(500).json({
+          message: "Creating a post failed!",
         });
       });
   }
@@ -100,16 +99,27 @@ router.get("", (req, res, next) => {
         posts: resultDocuments,
         maxCount: count,
       });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Fetching posts failed!",
+      });
     });
 });
 
 router.get("/:id", (req, res, next) => {
-  Post.findById({ _id: req.params.id }).then((post) => {
-    // it returns the json automatically hence we don't need to call the return
-    res.status(200).json({
-      post,
+  Post.findById({ _id: req.params.id })
+    .then((post) => {
+      // it returns the json automatically hence we don't need to call the return
+      res.status(200).json({
+        post,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Fetching post failed!",
+      });
     });
-  });
 });
 
 router.delete("/:id", auth, (req, res, next) => {
@@ -117,15 +127,17 @@ router.delete("/:id", auth, (req, res, next) => {
     .then((response) => {
       if (response.deletedCount > 0) {
         res.status(200).json({
-          message: "Post Deleted",
+          message: "Post Deleted!",
         });
       } else {
-        throw Error("You can't delete posts created by others");
+        res.status(400).json({
+          message: "You can't delete posts created by others!",
+        });
       }
     })
     .catch((error) => {
-      res.status(400).json({
-        message: error.message,
+      res.status(500).json({
+        message: "Deleting the post failed!",
       });
     });
 });
@@ -156,15 +168,17 @@ router.put(
         console.log(response);
         if (response.modifiedCount > 0 || response.matchedCount > 0) {
           res.status(200).json({
-            message: "Post Updated",
+            message: "Post Updated!",
           });
         } else {
-          throw Error("You can't edit posts created by others");
+          res.status(400).json({
+            message: "You can't edit posts created by others!",
+          });
         }
       })
       .catch((error) => {
         res.status(400).json({
-          message: error.message,
+          message: "Editing of post failed!",
         });
       });
   }

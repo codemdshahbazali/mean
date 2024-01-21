@@ -40,30 +40,32 @@ export class AuthService {
       email,
       password,
     };
-    console.log(authData);
     this.http
       .post<any>('http://localhost:3000/api/auth/login', authData)
       .subscribe({
         next: (response) => {
           this.token = response.token;
-          
+
           if (!this.token) {
             return;
           }
 
           this.loginStatus.next(true);
           this.creator = response.userId;
-          localStorage.setItem('tokenDetails', JSON.stringify({
-            token: response.token,
-            creator: response.userId,
-            expiresIn: response.expiresIn,
-            timestamp: (new Date()).toISOString()
-          }));
+          localStorage.setItem(
+            'tokenDetails',
+            JSON.stringify({
+              token: response.token,
+              creator: response.userId,
+              expiresIn: response.expiresIn,
+              timestamp: new Date().toISOString(),
+            })
+          );
           this.autoLogout(response.expiresIn);
           this.router.navigate(['/']);
         },
         error: (err) => {
-          console.log(err.message);
+          this.loginStatus.next(false);
         },
       });
   }
@@ -81,10 +83,10 @@ export class AuthService {
     let timeCreated = new Date(tokenDetails.timestamp).getTime();
     let timeElapsed = timeNow - timeCreated;
 
-    console.log("timeNow => ", timeNow)
-    console.log("timeCreated => ", timeCreated)
-    console.log("timeElapsed => ", timeElapsed)
-    console.log("timer => ", Number(tokenDetails.expiresIn) - timeElapsed)
+    console.log('timeNow => ', timeNow);
+    console.log('timeCreated => ', timeCreated);
+    console.log('timeElapsed => ', timeElapsed);
+    console.log('timer => ', Number(tokenDetails.expiresIn) - timeElapsed);
     this.autoLogout(Number(tokenDetails.expiresIn) - timeElapsed);
   }
 

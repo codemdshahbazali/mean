@@ -7,10 +7,10 @@ const router = express.Router();
 
 router.post("/register", (req, res, next) => {
   const saltRounds = 10; //higher value it is, longer it takes to encrypt but it is more secure
-  bcrypt.hash(req.body.password, saltRounds).then((hashedPassowrd) => {
+  bcrypt.hash(req.body.password, saltRounds).then((hashedPassword) => {
     const user = new User({
       email: req.body.email,
-      password: hashedPassowrd,
+      password: hashedPassword,
     });
 
     user
@@ -18,13 +18,13 @@ router.post("/register", (req, res, next) => {
       .then((createdUser) => {
         res.status(201).json({
           post: {
-            message: "User created!",
+            message: "User created!!!",
           },
         });
       })
       .catch((error) => {
         res.status(500).json({
-          message: error.message,
+          message: "Email already exists!!!",
         });
       });
   });
@@ -46,7 +46,7 @@ router.post("/login", (req, res, next) => {
     .then((isAuthenticated) => {
       if (!isAuthenticated) {
         return res.status(400).json({
-          message: "Incorrect Password",
+          message: "Incorrect Password !!!",
         });
       }
 
@@ -63,6 +63,7 @@ router.post("/login", (req, res, next) => {
       });
     })
     .catch((error) => {
+      console.log(error.message);
       res.status(400).json({
         message: error.message,
       });

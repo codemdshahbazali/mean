@@ -18,10 +18,11 @@ const routes: Routes = [
   },
   ,
   {
-    canActivate: [AuthGaurdService, PostGaurdService],
+    canActivate: [AuthGaurdService],
     path: 'edit/:id',
     component: PostCreateComponent,
-  },,
+  },
+  ,
   {
     path: 'auth',
     component: AuthComponent,

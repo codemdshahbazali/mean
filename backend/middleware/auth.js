@@ -7,12 +7,11 @@ function auth(req, res, next) {
     const authData = jwt.verify(token, "this_is_a_secret_key");
 
     req.authData = authData;
-    
+
     next();
   } catch (e) {
     res.status(401).json({
-      message: "You are not authorized.",
-      error: e.message,
+      message: "You are not authenticated !!!",
     });
   }
 }

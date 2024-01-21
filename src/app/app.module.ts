@@ -22,10 +22,12 @@ import { MatListModule } from '@angular/material/list';
 import { Sidenav1Component } from './sidenav1/sidenav1.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { AuthComponent } from './auth/auth.component';
 import { AuthInterceptor } from './auth/auth-interceptor.service';
-
+import { ErrorInterceptor } from './error-interceptor';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { AuthInterceptor } from './auth/auth-interceptor.service';
     SidenavComponent,
     Sidenav1Component,
     AuthComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,14 +57,20 @@ import { AuthInterceptor } from './auth/auth-interceptor.service';
     MatProgressBarModule,
     ReactiveFormsModule,
     MatPaginatorModule,
-    FormsModule
+    FormsModule,
+    MatDialogModule,
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })
